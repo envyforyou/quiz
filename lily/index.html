@@ -335,6 +335,51 @@
     transform: translateY(-2px);
   }
 
+  /* ── share ── */
+  .share-section {
+    margin-bottom: 32px;
+  }
+  .share-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dust);
+    margin-bottom: 12px;
+  }
+  .share-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .btn-share {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--dust);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 11px 20px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.25s ease;
+    text-decoration: none;
+  }
+  .btn-share:hover {
+    border-color: var(--rose);
+    color: var(--rose);
+    transform: translateY(-2px);
+  }
+  .btn-share.copied {
+    border-color: var(--sage);
+    color: var(--sage);
+  }
+  .btn-share svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+
   /* ── mobile ── */
   @media (max-width: 500px) {
     .result-header { padding: 36px 24px 28px; }
@@ -356,7 +401,7 @@
   <header>
     <p class="subtitle">A little personality quiz</p>
     <h1>if you were a<br><em>lily</em>, which<br>would you be?</h1>
-    <p class="tagline">quick questions about how you move through the world —<br>and we'll find the lily that blooms like you do.</p>
+    <p class="tagline">seven questions about how you move through the world —<br>and we'll find the lily that blooms like you do.</p>
     <div class="divider"><span></span><i>✿</i><span></span></div>
   </header>
 
@@ -579,12 +624,138 @@ function showResult() {
         <div class="result-traits">
           ${r.traits.map(t => `<span class="trait">${t}</span>`).join('')}
         </div>
+        <div class="share-section">
+          <p class="share-label">share your result</p>
+          <div class="share-btns">
+            <button class="btn-share" id="btn-share-native" onclick="shareResult('${winner}')">
+              <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+              share
+            </button>
+          </div>
+        </div>
         <button class="btn-retry" onclick="restart()">take it again ↺</button>
       </div>
     </div>
   `;
   resultEl.classList.add('show');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function shareResult(winnerId) {
+  const r = results[winnerId];
+  const btn = document.getElementById('btn-share-native');
+
+  // ── draw the share card on canvas ──
+  const W = 720, H = 960;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // background gradient
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#faf6f0');
+  bg.addColorStop(1, '#f0e8da');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // soft blush blob top-left
+  const g1 = ctx.createRadialGradient(80, 120, 0, 80, 120, 320);
+  g1.addColorStop(0, 'rgba(232,180,160,0.28)');
+  g1.addColorStop(1, 'rgba(232,180,160,0)');
+  ctx.fillStyle = g1; ctx.fillRect(0, 0, W, H);
+
+  // soft sage blob bottom-right
+  const g2 = ctx.createRadialGradient(W - 80, H - 120, 0, W - 80, H - 120, 320);
+  g2.addColorStop(0, 'rgba(138,158,122,0.22)');
+  g2.addColorStop(1, 'rgba(138,158,122,0)');
+  ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
+
+  // thin border
+  ctx.strokeStyle = '#d4c4b0';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(28, 28, W - 56, H - 56);
+
+  // icon
+  ctx.font = '88px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(r.icon, W / 2, 200);
+
+  // "you are a" label
+  ctx.font = '300 22px sans-serif';
+  ctx.fillStyle = '#8a9e7a';
+  ctx.letterSpacing = '0.2em';
+  ctx.fillText('you are a', W / 2, 280);
+
+  // lily name
+  ctx.font = 'italic 300 72px Georgia, serif';
+  ctx.fillStyle = '#c97a6a';
+  ctx.fillText(r.name, W / 2, 370);
+
+  // tagline
+  ctx.font = '300 26px sans-serif';
+  ctx.fillStyle = '#9a8e85';
+  ctx.fillText(r.tagline, W / 2, 430);
+
+  // divider line
+  ctx.strokeStyle = '#d4c4b0';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(W / 2 - 100, 466); ctx.lineTo(W / 2 + 100, 466);
+  ctx.stroke();
+
+  // description — word wrap
+  ctx.font = '300 24px Georgia, serif';
+  ctx.fillStyle = '#3d3228';
+  ctx.textAlign = 'center';
+  const words = r.desc.split(' ');
+  let line = '', y = 520, maxW = W - 120;
+  for (const word of words) {
+    const test = line + (line ? ' ' : '') + word;
+    if (ctx.measureText(test).width > maxW && line) {
+      ctx.fillText(line, W / 2, y);
+      line = word; y += 36;
+    } else { line = test; }
+  }
+  if (line) ctx.fillText(line, W / 2, y);
+
+  // traits
+  const traitY = y + 60;
+  ctx.font = '300 18px sans-serif';
+  ctx.fillStyle = '#7a6e65';
+  const traitLine = r.traits.join('  ·  ');
+  ctx.fillText(traitLine, W / 2, traitY);
+
+  // quiz name watermark
+  ctx.font = '200 20px sans-serif';
+  ctx.fillStyle = '#c8a96e';
+  ctx.fillText('✿ which lily are you? · envyforyou.github.io/quiz/lily', W / 2, H - 60);
+
+  // ── convert to blob and share ──
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], 'my-lily-result.png', { type: 'image/png' });
+
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: `i'm a ${r.name}`,
+          text: `i got ${r.name} on the lily personality quiz ✿ — "${r.tagline}"\n\ntake it → ${window.location.href}`,
+        });
+      } catch (e) {
+        if (e.name !== 'AbortError') fallbackDownload(canvas, r.name);
+      }
+    } else {
+      // fallback: just download the image
+      fallbackDownload(canvas, r.name);
+    }
+  }, 'image/png');
+}
+
+function fallbackDownload(canvas, name) {
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = `${name.toLowerCase().replace(/ /g, '-')}-result.png`;
+  a.click();
 }
 
 function restart() {
