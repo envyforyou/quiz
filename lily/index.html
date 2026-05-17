@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Which Lily Are You?</title>
-<link rel="icon" href="lily.png">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -410,7 +409,7 @@
   <header>
     <p class="subtitle">A little personality quiz</p>
     <h1>if you were a<br><em>lily</em>, which<br>would you be?</h1>
-    <p class="tagline">seven questions about how you move through the world —<br>and we'll find the lily that blooms like you do.</p>
+    <p class="tagline">sixteen questions about how you move through the world —<br>and we'll find the lily that blooms like you do.</p>
     <div class="divider"><span></span><i>✿</i><span></span></div>
   </header>
 
@@ -492,6 +491,78 @@ const questions = [
       { letter: "b", text: "you resist it at first, then commit completely once you've decided", scores: { stargazer: 1, calla: 2, tiger: 0, white: 2, water: 2, spider: 1, valley: 2 } },
       { letter: "c", text: "you're the one who usually initiates it. stagnation doesn't sit well with you.", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 1, spider: 3, valley: 0 } },
       { letter: "d", text: "you observe it first. slow to move but when you do, it's deliberate and final.", scores: { stargazer: 0, calla: 3, tiger: 0, white: 1, water: 3, spider: 0, valley: 3 } },
+    ]
+  },
+  {
+    text: "someone asks for your honest opinion on something they made. you—",
+    options: [
+      { letter: "a", text: "tell them the truth, gently but fully. they asked.", scores: { stargazer: 2, calla: 2, tiger: 1, white: 1, water: 2, spider: 1, valley: 2 } },
+      { letter: "b", text: "lead with what works, then ease into what doesn't", scores: { stargazer: 1, calla: 1, tiger: 0, white: 3, water: 1, spider: 0, valley: 3 } },
+      { letter: "c", text: "say exactly what you think. sugar-coating doesn't help anyone.", scores: { stargazer: 3, calla: 1, tiger: 3, white: 0, water: 0, spider: 2, valley: 0 } },
+      { letter: "d", text: "ask what kind of feedback they want before giving any", scores: { stargazer: 0, calla: 3, tiger: 0, white: 2, water: 3, spider: 1, valley: 1 } },
+    ]
+  },
+  {
+    text: "how do you feel about being needed by people?",
+    options: [
+      { letter: "a", text: "it means something to you. you show up when it matters.", scores: { stargazer: 1, calla: 0, tiger: 0, white: 3, water: 1, spider: 0, valley: 3 } },
+      { letter: "b", text: "you like it but you need room to breathe too", scores: { stargazer: 2, calla: 2, tiger: 1, white: 1, water: 2, spider: 1, valley: 1 } },
+      { letter: "c", text: "it's complicated. you'll always help but needing isn't the same as wanting.", scores: { stargazer: 0, calla: 3, tiger: 0, white: 0, water: 3, spider: 3, valley: 0 } },
+      { letter: "d", text: "you'd do anything for the right people. anything.", scores: { stargazer: 3, calla: 0, tiger: 2, white: 2, water: 0, spider: 1, valley: 2 } },
+    ]
+  },
+  {
+    text: "your relationship with silence is—",
+    options: [
+      { letter: "a", text: "comfortable. you don't need to fill every moment.", scores: { stargazer: 0, calla: 3, tiger: 0, white: 2, water: 3, spider: 2, valley: 1 } },
+      { letter: "b", text: "you fill it — music, talking, something. silence feels like a void.", scores: { stargazer: 2, calla: 0, tiger: 3, white: 0, water: 0, spider: 1, valley: 1 } },
+      { letter: "c", text: "you live in it. most of your best thinking happens there.", scores: { stargazer: 1, calla: 2, tiger: 0, white: 1, water: 3, spider: 3, valley: 2 } },
+      { letter: "d", text: "you're fine either way — whatever the moment calls for", scores: { stargazer: 1, calla: 1, tiger: 1, white: 3, water: 1, spider: 0, valley: 3 } },
+    ]
+  },
+  {
+    text: "when you meet someone new, they usually notice—",
+    options: [
+      { letter: "a", text: "that you're warm and easy to talk to right away", scores: { stargazer: 3, calla: 0, tiger: 2, white: 2, water: 0, spider: 0, valley: 3 } },
+      { letter: "b", text: "that you're hard to read but clearly interesting", scores: { stargazer: 0, calla: 3, tiger: 0, white: 0, water: 2, spider: 3, valley: 0 } },
+      { letter: "c", text: "that you ask more questions than you answer", scores: { stargazer: 1, calla: 1, tiger: 0, white: 1, water: 3, spider: 1, valley: 2 } },
+      { letter: "d", text: "that there's something about you they can't quite place", scores: { stargazer: 1, calla: 1, tiger: 1, white: 0, water: 1, spider: 3, valley: 1 } },
+    ]
+  },
+  {
+    text: "a plan falls apart last minute. your response is—",
+    options: [
+      { letter: "a", text: "pivot immediately. you already have three alternatives.", scores: { stargazer: 2, calla: 0, tiger: 3, white: 0, water: 1, spider: 2, valley: 0 } },
+      { letter: "b", text: "honestly relieved. you didn't really want to go anyway.", scores: { stargazer: 0, calla: 2, tiger: 0, white: 2, water: 2, spider: 1, valley: 1 } },
+      { letter: "c", text: "frustrated, but you take a breath and figure it out quietly", scores: { stargazer: 1, calla: 2, tiger: 0, white: 1, water: 3, spider: 1, valley: 2 } },
+      { letter: "d", text: "immediately suggest something better and get everyone on board", scores: { stargazer: 3, calla: 0, tiger: 2, white: 1, water: 0, spider: 1, valley: 2 } },
+    ]
+  },
+  {
+    text: "what do you think people misunderstand about you most?",
+    options: [
+      { letter: "a", text: "that your quietness means you're not paying attention — you catch everything", scores: { stargazer: 0, calla: 2, tiger: 0, white: 1, water: 3, spider: 3, valley: 1 } },
+      { letter: "b", text: "that your boldness means you're not sensitive — you feel everything", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 0, spider: 2, valley: 0 } },
+      { letter: "c", text: "that your independence means you don't need people — you just choose carefully", scores: { stargazer: 0, calla: 3, tiger: 2, white: 0, water: 2, spider: 2, valley: 0 } },
+      { letter: "d", text: "that your gentleness means you're a pushover — it's a choice, not a limit", scores: { stargazer: 0, calla: 0, tiger: 0, white: 3, water: 1, spider: 0, valley: 3 } },
+    ]
+  },
+  {
+    text: "when you're hurting, you tend to—",
+    options: [
+      { letter: "a", text: "process it alone first, then maybe let someone in", scores: { stargazer: 0, calla: 3, tiger: 0, white: 1, water: 3, spider: 3, valley: 1 } },
+      { letter: "b", text: "reach out to the one or two people you actually trust", scores: { stargazer: 1, calla: 1, tiger: 0, white: 3, water: 1, spider: 0, valley: 3 } },
+      { letter: "c", text: "channel it into something — movement, creativity, action", scores: { stargazer: 3, calla: 0, tiger: 3, white: 0, water: 0, spider: 2, valley: 0 } },
+      { letter: "d", text: "carry it quietly until it softens on its own", scores: { stargazer: 0, calla: 1, tiger: 0, white: 2, water: 2, spider: 1, valley: 2 } },
+    ]
+  },
+  {
+    text: "what makes you feel most like yourself?",
+    options: [
+      { letter: "a", text: "when you're in the middle of something you genuinely love", scores: { stargazer: 3, calla: 1, tiger: 2, white: 0, water: 1, spider: 2, valley: 1 } },
+      { letter: "b", text: "when you're alone and there's nothing you have to be", scores: { stargazer: 0, calla: 3, tiger: 0, white: 1, water: 3, spider: 2, valley: 1 } },
+      { letter: "c", text: "when someone really sees you and doesn't flinch", scores: { stargazer: 1, calla: 0, tiger: 1, white: 2, water: 2, spider: 3, valley: 2 } },
+      { letter: "d", text: "when the people you love are okay and you're with them", scores: { stargazer: 1, calla: 0, tiger: 1, white: 3, water: 0, spider: 0, valley: 3 } },
     ]
   },
 ];
