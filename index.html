@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Lily Are You?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #faf6f0;
+    --warm: #f0e8da;
+    --dust: #d4c4b0;
+    --sage: #8a9e7a;
+    --blush: #e8b4a0;
+    --rose: #c97a6a;
+    --deep: #2a2018;
+    --ink: #3d3228;
+    --gold: #c8a96e;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── decorative background ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 10% 20%, rgba(232,180,160,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 90% 80%, rgba(138,158,122,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(200,169,110,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── petals bg ── */
+  .petal {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    animation: fall linear infinite;
+    z-index: 0;
+    font-size: 1.2rem;
+  }
+  @keyframes fall {
+    0%   { transform: translateY(-60px) rotate(0deg); opacity: 0; }
+    10%  { opacity: 0.4; }
+    90%  { opacity: 0.2; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+  }
+
+  /* ── wrapper ── */
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+  }
+
+  /* ── header ── */
+  header {
+    text-align: center;
+    margin-bottom: 64px;
+    animation: fadeUp 1s ease both;
+  }
+  .subtitle {
+    font-family: 'Jost', sans-serif;
+    font-weight: 200;
+    font-size: 0.78rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 8vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--deep);
+    margin-bottom: 20px;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--rose);
+  }
+  .tagline {
+    font-size: 0.9rem;
+    color: #7a6e65;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 28px auto 0;
+    max-width: 260px;
+  }
+  .divider span { flex: 1; height: 1px; background: var(--dust); }
+  .divider i { color: var(--gold); font-style: normal; font-size: 1rem; }
+
+  /* ── progress ── */
+  #progress-wrap {
+    margin-bottom: 40px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .prog-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dust);
+    margin-bottom: 10px;
+  }
+  .prog-bar {
+    height: 2px;
+    background: var(--warm);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blush), var(--rose));
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+
+  /* ── question card ── */
+  .question-block {
+    display: none;
+    animation: fadeUp 0.6s ease both;
+  }
+  .question-block.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-number {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 12px;
+  }
+  .q-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.35rem, 4vw, 1.75rem);
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--deep);
+    margin-bottom: 32px;
+  }
+
+  /* ── options ── */
+  .options { display: grid; gap: 12px; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 18px 22px;
+    border: 1px solid var(--dust);
+    border-radius: 4px;
+    background: rgba(255,255,255,0.55);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    backdrop-filter: blur(4px);
+  }
+  .option:hover {
+    border-color: var(--blush);
+    background: rgba(255,255,255,0.85);
+    transform: translateX(4px);
+    box-shadow: -3px 0 0 var(--blush);
+  }
+  .option.selected {
+    border-color: var(--rose);
+    background: rgba(232,180,160,0.15);
+    box-shadow: -3px 0 0 var(--rose);
+  }
+  .opt-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--gold);
+    min-width: 20px;
+    margin-top: 1px;
+  }
+  .opt-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  /* ── next btn ── */
+  .btn-wrap { margin-top: 36px; text-align: right; }
+  .btn-next {
+    background: transparent;
+    border: 1px solid var(--rose);
+    color: var(--rose);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
+  .btn-next.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .btn-next:hover {
+    background: var(--rose);
+    color: var(--cream);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201,122,106,0.25);
+  }
+
+  /* ── result ── */
+  #result {
+    display: none;
+    animation: fadeUp 0.8s ease both;
+  }
+  #result.show { display: block; }
+
+  .result-card {
+    border: 1px solid var(--dust);
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(8px);
+  }
+  .result-header {
+    padding: 48px 40px 36px;
+    background: linear-gradient(135deg, rgba(232,180,160,0.2), rgba(138,158,122,0.15));
+    border-bottom: 1px solid var(--dust);
+    text-align: center;
+  }
+  .result-lily-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    display: block;
+    filter: drop-shadow(0 4px 12px rgba(201,122,106,0.3));
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+  }
+  .result-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 10px;
+  }
+  .result-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 7vw, 3rem);
+    font-weight: 400;
+    color: var(--deep);
+    margin-bottom: 6px;
+  }
+  .result-name em { font-style: italic; color: var(--rose); }
+  .result-tagline {
+    font-size: 0.82rem;
+    color: #9a8e85;
+    letter-spacing: 0.06em;
+    font-style: italic;
+  }
+  .result-body { padding: 36px 40px; }
+  .result-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--ink);
+    margin-bottom: 28px;
+  }
+  .result-traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+  }
+  .trait {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--dust);
+    border-radius: 20px;
+    color: #7a6e65;
+    background: rgba(255,255,255,0.6);
+  }
+  .btn-retry {
+    display: inline-block;
+    background: transparent;
+    border: 1px solid var(--sage);
+    color: var(--sage);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 13px 32px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+  .btn-retry:hover {
+    background: var(--sage);
+    color: var(--cream);
+    transform: translateY(-2px);
+  }
+
+  /* ── mobile ── */
+  @media (max-width: 500px) {
+    .result-header { padding: 36px 24px 28px; }
+    .result-body   { padding: 28px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- falling petals -->
+<div class="petal" style="left:5%;animation-duration:12s;animation-delay:0s;font-size:1rem;">✿</div>
+<div class="petal" style="left:20%;animation-duration:15s;animation-delay:3s;">🌸</div>
+<div class="petal" style="left:40%;animation-duration:11s;animation-delay:6s;font-size:0.9rem;">✾</div>
+<div class="petal" style="left:65%;animation-duration:14s;animation-delay:1s;">❀</div>
+<div class="petal" style="left:80%;animation-duration:13s;animation-delay:8s;font-size:0.85rem;">✿</div>
+<div class="petal" style="left:92%;animation-duration:16s;animation-delay:4s;">✾</div>
+
+<div class="wrap">
+  <header>
+    <p class="subtitle">A little personality quiz</p>
+    <h1>if you were a<br><em>lily</em>, which<br>would you be?</h1>
+    <p class="tagline">quick questions about how you move through the world —<br>and we'll find the lily that blooms like you do.</p>
+    <div class="divider"><span></span><i>✿</i><span></span></div>
+  </header>
+
+  <div id="progress-wrap">
+    <div class="prog-label">
+      <span id="prog-text">question 1 of 7</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
+
+  <!-- QUESTIONS -->
+  <div id="questions"></div>
+
+  <!-- RESULT -->
+  <div id="result"></div>
+</div>
+
+<script>
+const questions = [
+  {
+    text: "it's a quiet afternoon and you have it all to yourself. what does that look like?",
+    options: [
+      { letter: "a", text: "curled up somewhere cozy, deep in a book or your own thoughts", scores: { stargazer: 1, calla: 2, tiger: 0, white: 2, water: 1 } },
+      { letter: "b", text: "out somewhere — exploring, walking, finding something new", scores: { stargazer: 1, calla: 0, tiger: 3, white: 0, water: 2 } },
+      { letter: "c", text: "working on something — a project, a craft, anything with your hands", scores: { stargazer: 2, calla: 1, tiger: 1, white: 0, water: 2 } },
+      { letter: "d", text: "doing absolutely nothing on purpose. rest is productive too.", scores: { stargazer: 0, calla: 2, tiger: 0, white: 3, water: 1 } },
+    ]
+  },
+  {
+    text: "someone you care about is going through something hard. your instinct is to—",
+    options: [
+      { letter: "a", text: "show up. no questions asked. just be there.", scores: { stargazer: 1, calla: 1, tiger: 0, white: 3, water: 2 } },
+      { letter: "b", text: "figure out what they actually need and do that specific thing", scores: { stargazer: 2, calla: 2, tiger: 0, white: 1, water: 1 } },
+      { letter: "c", text: "give them space but check in quietly so they know you're around", scores: { stargazer: 1, calla: 3, tiger: 0, white: 1, water: 2 } },
+      { letter: "d", text: "distract them — plans, jokes, adventures. grief doesn't sit well with you.", scores: { stargazer: 0, calla: 0, tiger: 3, white: 0, water: 1 } },
+    ]
+  },
+  {
+    text: "how do you feel walking into a room full of people you don't know?",
+    options: [
+      { letter: "a", text: "honestly kind of lit — you love meeting people", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 1 } },
+      { letter: "b", text: "fine. you'll find one interesting person and talk to them all night", scores: { stargazer: 1, calla: 2, tiger: 1, white: 1, water: 2 } },
+      { letter: "c", text: "quiet at first. warm up slowly but then you're fully there", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2 } },
+      { letter: "d", text: "mildly exhausted in advance but you'll manage and forget you were worried", scores: { stargazer: 0, calla: 3, tiger: 0, white: 1, water: 2 } },
+    ]
+  },
+  {
+    text: "when you love something — a show, a song, a game — you tend to—",
+    options: [
+      { letter: "a", text: "go deep. lore, theory, every detail. you want to understand it completely.", scores: { stargazer: 2, calla: 1, tiger: 0, white: 0, water: 3 } },
+      { letter: "b", text: "share it immediately. drag everyone you know into it.", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 0 } },
+      { letter: "c", text: "keep it close. it's yours. you don't need to explain it.", scores: { stargazer: 0, calla: 3, tiger: 0, white: 2, water: 1 } },
+      { letter: "d", text: "enjoy it quietly and let it just... exist in your life.", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2 } },
+    ]
+  },
+  {
+    text: "what does getting angry look like for you?",
+    options: [
+      { letter: "a", text: "you don't hide it — you go quiet and people can feel it", scores: { stargazer: 1, calla: 3, tiger: 0, white: 2, water: 1 } },
+      { letter: "b", text: "you say what you think, directly, and then it's over", scores: { stargazer: 2, calla: 0, tiger: 3, white: 0, water: 1 } },
+      { letter: "c", text: "you let it simmer, think about it, and bring it up carefully later", scores: { stargazer: 1, calla: 2, tiger: 0, white: 1, water: 3 } },
+      { letter: "d", text: "you rarely get angry — mostly just tired or disappointed", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2 } },
+    ]
+  },
+  {
+    text: "your closest friends would describe you as—",
+    options: [
+      { letter: "a", text: "the one who shows up. reliable, steady, quietly essential.", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2 } },
+      { letter: "b", text: "surprising — people think they know you and then you show them something new", scores: { stargazer: 1, calla: 0, tiger: 2, white: 0, water: 3 } },
+      { letter: "c", text: "intense in the best way — real conversations only, no small talk", scores: { stargazer: 3, calla: 2, tiger: 0, white: 0, water: 1 } },
+      { letter: "d", text: "genuinely funny, hard to read, but when you're in — you're fully in", scores: { stargazer: 0, calla: 3, tiger: 1, white: 1, water: 1 } },
+    ]
+  },
+  {
+    text: "what's your relationship with change?",
+    options: [
+      { letter: "a", text: "you adapt fast — new environment, new you. almost too easy.", scores: { stargazer: 2, calla: 0, tiger: 3, white: 0, water: 1 } },
+      { letter: "b", text: "you resist it at first, then commit completely once you've decided", scores: { stargazer: 1, calla: 2, tiger: 0, white: 2, water: 2 } },
+      { letter: "c", text: "you're the one who usually initiates it. stagnation doesn't sit well with you.", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 1 } },
+      { letter: "d", text: "you observe it first. slow to move but when you do, it's deliberate and final.", scores: { stargazer: 0, calla: 3, tiger: 0, white: 1, water: 3 } },
+    ]
+  },
+];
+
+const results = {
+  stargazer: {
+    icon: "✿",
+    name: "Stargazer Lily",
+    tagline: "bold, reaching, unforgettable",
+    desc: "you are a stargazer — vivid and reaching outward, the kind of presence that fills a room without trying. you have deep feelings and you don't apologize for them. people are drawn to you because you're genuinely, fully there. you love hard, care loudly, and grow best when you have space to bloom without limits. the world feels bigger when you're paying attention to it.",
+    traits: ["warm & expressive", "deeply passionate", "magnetically present", "emotionally honest", "fiercely loyal"]
+  },
+  calla: {
+    icon: "❀",
+    name: "Calla Lily",
+    tagline: "elegant, layered, quietly complex",
+    desc: "you are a calla lily — clean lines on the surface, but the more you look the more there is. you don't give yourself away easily, and that's not coldness — it's precision. you know who you are and you don't need everyone to know it too. the people who are close to you know they earned it. you're elegant in the truest sense: nothing wasted, everything intentional.",
+    traits: ["quietly intense", "selective & intentional", "deeply self-aware", "composed under pressure", "rare when trusted"]
+  },
+  tiger: {
+    icon: "✾",
+    name: "Tiger Lily",
+    tagline: "wild, free, surprisingly tender",
+    desc: "you are a tiger lily — spotted and vivid, growing in unexpected places, doing things your own way. you have an energy people don't always know what to do with at first, but that's not a flaw — that's character. you're adventurous and a little unpredictable, and somehow that makes you one of the most dependable people in the room when it actually matters. you love with a specific kind of wildness that's completely yours.",
+    traits: ["adventurous spirit", "fiercely independent", "spontaneous", "surprisingly soft-hearted", "unapologetically original"]
+  },
+  white: {
+    icon: "✿",
+    name: "White Lily",
+    tagline: "steady, whole, genuinely rare",
+    desc: "you are a white lily — timeless and grounding, the kind of person who makes everything feel a little more okay just by being in it. you're not trying to be anything other than exactly what you are, and there's something quietly extraordinary about that. people come to you. you hold things together without making a fuss about it. your peace isn't absence — it's something you built, and it shows.",
+    traits: ["deeply grounding", "emotionally steady", "genuinely present", "quietly strong", "effortlessly whole"]
+  },
+  water: {
+    icon: "❀",
+    name: "Water Lily",
+    tagline: "still on the surface, everything underneath",
+    desc: "you are a water lily — rooted somewhere deep, floating beautifully, carrying more than anyone sees. you're thoughtful in a way that surprises people — still on the outside, a whole world going on underneath. you notice everything and share selectively. you're the kind of person someone could know for years and still find new things to love about. the depth in you isn't hidden — it's just patient.",
+    traits: ["deeply observant", "quietly complex", "emotionally intelligent", "introspective", "surprisingly layered"]
+  }
+};
+
+let current = 0;
+let scores = { stargazer: 0, calla: 0, tiger: 0, white: 0, water: 0 };
+let answers = new Array(questions.length).fill(null);
+
+function render() {
+  const container = document.getElementById('questions');
+  container.innerHTML = '';
+  questions.forEach((q, qi) => {
+    const block = document.createElement('div');
+    block.className = 'question-block' + (qi === current ? ' active' : '');
+    block.id = 'q' + qi;
+    block.innerHTML = `
+      <p class="q-number">question ${qi+1} of ${questions.length}</p>
+      <p class="q-text">${q.text}</p>
+      <div class="options">
+        ${q.options.map((opt, oi) => `
+          <div class="option${answers[qi] === oi ? ' selected' : ''}" data-q="${qi}" data-o="${oi}">
+            <span class="opt-letter">${opt.letter}</span>
+            <span class="opt-text">${opt.text}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="btn-wrap">
+        <button class="btn-next${answers[qi] !== null ? ' visible' : ''}" data-q="${qi}">
+          ${qi < questions.length - 1 ? 'next →' : 'see my result →'}
+        </button>
+      </div>
+    `;
+    container.appendChild(block);
+  });
+  updateProgress();
+  attachListeners();
+}
+
+function attachListeners() {
+  document.querySelectorAll('.option').forEach(el => {
+    el.addEventListener('click', () => {
+      const qi = parseInt(el.dataset.q);
+      const oi = parseInt(el.dataset.o);
+      answers[qi] = oi;
+      document.querySelectorAll(`[data-q="${qi}"].option`).forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      const btn = document.querySelector(`.btn-next[data-q="${qi}"]`);
+      if (btn) btn.classList.add('visible');
+    });
+  });
+  document.querySelectorAll('.btn-next').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const qi = parseInt(btn.dataset.q);
+      if (answers[qi] === null) return;
+      if (qi < questions.length - 1) {
+        current = qi + 1;
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        showResult();
+      }
+    });
+  });
+}
+
+function updateProgress() {
+  const answered = answers.filter(a => a !== null).length;
+  const pct = Math.round((answered / questions.length) * 100);
+  document.getElementById('prog-text').textContent = `question ${current+1} of ${questions.length}`;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+function showResult() {
+  // tally scores
+  scores = { stargazer: 0, calla: 0, tiger: 0, white: 0, water: 0 };
+  questions.forEach((q, qi) => {
+    if (answers[qi] !== null) {
+      const s = q.options[answers[qi]].scores;
+      Object.keys(s).forEach(k => scores[k] += s[k]);
+    }
+  });
+
+  const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  const r = results[winner];
+
+  document.getElementById('questions').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+
+  const resultEl = document.getElementById('result');
+  resultEl.innerHTML = `
+    <div class="result-card">
+      <div class="result-header">
+        <span class="result-lily-icon">${r.icon}</span>
+        <p class="result-label">you are a</p>
+        <h2 class="result-name"><em>${r.name}</em></h2>
+        <p class="result-tagline">${r.tagline}</p>
+      </div>
+      <div class="result-body">
+        <p class="result-desc">${r.desc}</p>
+        <div class="result-traits">
+          ${r.traits.map(t => `<span class="trait">${t}</span>`).join('')}
+        </div>
+        <button class="btn-retry" onclick="restart()">take it again ↺</button>
+      </div>
+    </div>
+  `;
+  resultEl.classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart() {
+  current = 0;
+  answers = new Array(questions.length).fill(null);
+  scores = { stargazer: 0, calla: 0, tiger: 0, white: 0, water: 0 };
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('questions').style.display = '';
+  document.getElementById('progress-wrap').style.display = '';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+</script>
+</body>
+</html>
