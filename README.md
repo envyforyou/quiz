@@ -9,7 +9,7 @@ each quiz is a single self-contained html file — no frameworks, no build steps
 
 | quiz | description | link |
 |------|-------------|------|
-| if you were a lily... | find out which lily matches your personality | [play →](https://envyforyou.github.io/quiz/lily/) |
+| if you were a lily... | find out which lily matches your personality | [try →](https://envyforyou.github.io/quiz/lily/) |
 
 > more coming soon :3
 
