@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Sin Are You?</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0a0e;
+    --surface: #13101a;
+    --surface2: #1a1525;
+    --border: #2a2035;
+    --muted: #3d3050;
+    --subtle: #6a5a7a;
+    --body: #b8aac8;
+    --bright: #e8e0f0;
+    --accent: #8b2020;
+    --accent2: #c0392b;
+    --gold: #c8a84a;
+    --glow: rgba(139,32,32,0.2);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--body);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 35% at 15% 10%, rgba(139,32,32,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 85% 90%, rgba(80,20,100,0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 30% at 50% 50%, rgba(20,10,30,0.6) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* floating embers */
+  .ember {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0;
+    animation: rise linear infinite;
+    z-index: 0;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #c0392b;
+    box-shadow: 0 0 6px #c0392b;
+  }
+  @keyframes rise {
+    0%   { transform: translateY(110vh) translateX(0); opacity: 0; }
+    10%  { opacity: 0.6; }
+    50%  { transform: translateY(50vh) translateX(20px); }
+    90%  { opacity: 0.1; }
+    100% { transform: translateY(-20px) translateX(-10px); opacity: 0; }
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 70px 24px 120px;
+  }
+
+  /* ── header ── */
+  header {
+    text-align: center;
+    margin-bottom: 72px;
+    animation: fadeUp 1s ease both;
+  }
+  .subtitle {
+    font-family: 'Jost', sans-serif;
+    font-weight: 200;
+    font-size: 0.72rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 20px;
+    opacity: 0.8;
+  }
+  h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2.4rem, 8vw, 4.2rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--bright);
+    margin-bottom: 8px;
+    text-shadow: 0 0 40px rgba(139,32,32,0.4);
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--accent2);
+    display: block;
+    font-size: 0.55em;
+    letter-spacing: 0.15em;
+    margin-top: 8px;
+    text-shadow: none;
+    font-weight: 600;
+  }
+  .tagline {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--subtle);
+    line-height: 1.7;
+    margin-top: 20px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 24px auto 0;
+    max-width: 280px;
+  }
+  .divider span { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); }
+  .divider i { color: var(--accent2); font-style: normal; font-size: 0.8rem; opacity: 0.7; letter-spacing: 2px; }
+
+  /* ── progress ── */
+  #progress-wrap {
+    margin-bottom: 44px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .prog-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .prog-bar {
+    height: 1px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.6s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+    box-shadow: 0 0 8px var(--glow);
+  }
+
+  /* ── question ── */
+  .question-block { display: none; animation: fadeUp 0.5s ease both; }
+  .question-block.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-number {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    opacity: 0.7;
+    margin-bottom: 14px;
+  }
+  .q-text {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.1rem, 3.5vw, 1.45rem);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bright);
+    margin-bottom: 36px;
+  }
+
+  /* ── options ── */
+  .options { display: grid; gap: 10px; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .option:hover {
+    border-color: var(--accent);
+    background: rgba(139,32,32,0.08);
+    transform: translateX(4px);
+    box-shadow: -3px 0 0 var(--accent);
+  }
+  .option.selected {
+    border-color: var(--accent2);
+    background: rgba(192,57,43,0.1);
+    box-shadow: -3px 0 0 var(--accent2);
+  }
+  .opt-letter {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    color: var(--accent2);
+    opacity: 0.7;
+    min-width: 18px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .opt-text {
+    font-family: 'Crimson Text', serif;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: var(--body);
+  }
+
+  /* ── nav ── */
+  .btn-wrap { margin-top: 32px; display: flex; justify-content: space-between; align-items: center; }
+  .btn-prev {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 10px 0;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .btn-prev:hover { color: var(--body); }
+  .btn-next {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent2);
+    font-family: 'Cinzel', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    padding: 13px 32px;
+    cursor: pointer;
+    border-radius: 2px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
+  .btn-next.visible { opacity: 1; pointer-events: all; }
+  .btn-next:hover {
+    background: var(--accent);
+    color: var(--bright);
+    box-shadow: 0 0 20px var(--glow);
+  }
+
+  /* ── result ── */
+  #result { display: none; animation: fadeUp 0.8s ease both; }
+  #result.show { display: block; }
+
+  .result-card {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--surface);
+    position: relative;
+  }
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--sin-color, var(--accent2));
+  }
+  .result-header {
+    padding: 56px 44px 40px;
+    text-align: center;
+    position: relative;
+  }
+  .result-sin-symbol {
+    font-family: 'Cinzel', serif;
+    font-size: 3.5rem;
+    color: var(--sin-color, var(--accent2));
+    display: block;
+    margin-bottom: 20px;
+    text-shadow: 0 0 30px var(--sin-glow, var(--glow));
+    animation: float 4s ease-in-out infinite;
+    line-height: 1;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .result-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--subtle);
+    margin-bottom: 10px;
+  }
+  .result-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2.2rem, 7vw, 3.2rem);
+    font-weight: 700;
+    color: var(--sin-color, var(--accent2));
+    margin-bottom: 8px;
+    text-shadow: 0 0 30px var(--sin-glow, var(--glow));
+    line-height: 1.1;
+  }
+  .result-tagline {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--subtle);
+    letter-spacing: 0.04em;
+  }
+  .result-body {
+    padding: 36px 44px 44px;
+    border-top: 1px solid var(--border);
+  }
+  .result-verse {
+    font-family: 'Crimson Text', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--sin-color, var(--accent2));
+    opacity: 0.7;
+    text-align: center;
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.7;
+  }
+  .result-desc {
+    font-family: 'Crimson Text', serif;
+    font-size: 1.1rem;
+    line-height: 1.85;
+    color: var(--body);
+    margin-bottom: 28px;
+  }
+  .result-traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 36px;
+  }
+  .trait {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--subtle);
+    background: rgba(255,255,255,0.02);
+  }
+  .result-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn-share {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--sin-color, var(--accent2));
+    color: var(--sin-color, var(--accent2));
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.25s ease;
+    text-decoration: none;
+  }
+  .btn-share:hover {
+    background: var(--sin-color, var(--accent2));
+    color: var(--bg);
+    box-shadow: 0 0 20px var(--sin-glow, var(--glow));
+  }
+  .btn-share svg { width: 13px; height: 13px; fill: currentColor; }
+  .btn-retry {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    padding: 12px 24px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.25s ease;
+  }
+  .btn-retry:hover { border-color: var(--subtle); color: var(--body); }
+
+  @media (max-width: 500px) {
+    .result-header { padding: 40px 24px 28px; }
+    .result-body   { padding: 28px 24px 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ember" style="left:8%;animation-duration:14s;animation-delay:0s;"></div>
+<div class="ember" style="left:22%;animation-duration:18s;animation-delay:3s;width:2px;height:2px;"></div>
+<div class="ember" style="left:45%;animation-duration:12s;animation-delay:7s;background:#8b2020;box-shadow:0 0 4px #8b2020;"></div>
+<div class="ember" style="left:67%;animation-duration:16s;animation-delay:1s;width:2px;height:2px;"></div>
+<div class="ember" style="left:83%;animation-duration:20s;animation-delay:5s;"></div>
+<div class="ember" style="left:91%;animation-duration:13s;animation-delay:9s;width:2px;height:2px;background:#c8a84a;box-shadow:0 0 4px #c8a84a;"></div>
+<div class="ember" style="left:35%;animation-duration:17s;animation-delay:11s;width:2px;height:2px;"></div>
+
+<div class="wrap">
+  <header>
+    <p class="subtitle">a confession in seven parts</p>
+    <h1>which sin<br>claims you?<em>the seven deadly sins</em></h1>
+    <p class="tagline">eighteen questions stand between you and your verdict. answer honestly — the court of hell sees through lies.</p>
+    <div class="divider"><span></span><i>✦ ✦ ✦</i><span></span></div>
+  </header>
+
+  <div id="progress-wrap">
+    <div class="prog-label">
+      <span id="prog-text">i · of xviii</span>
+      <span id="prog-pct">0%</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+  </div>
+
+  <div id="questions"></div>
+  <div id="result"></div>
+</div>
+
+<script>
+const ROMAN = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII'];
+
+// sins: pride, envy, wrath, sloth, greed, gluttony, lust
+const sins = {
+  pride: {
+    symbol: "♔",
+    name: "Pride",
+    latin: "Superbia",
+    tagline: "the first and greatest of all sins",
+    color: "#c8a84a",
+    glow: "rgba(200,168,74,0.25)",
+    verse: '"How art thou fallen from heaven, O Lucifer, son of the morning."',
+    desc: "you are pride — the original sin, the one that started everything. you don't need anyone's approval and honestly you're a little contemptuous of people who do. you have standards, a vision of yourself that you hold to fiercely, and when someone challenges it the silence that follows is colder than any argument. you're not arrogant exactly — you're just... aware. of what you are, what you deserve, what you're capable of. and you're rarely wrong about it. the dangerous part isn't that you think too highly of yourself. it's that you're usually right.",
+    traits: ["unyielding self-belief", "refuses to be diminished", "standards others can't meet", "commanding presence", "the last to apologize"]
+  },
+  envy: {
+    symbol: "◈",
+    name: "Envy",
+    latin: "Invidia",
+    tagline: "the sin that poisons from within",
+    color: "#2ecc71",
+    glow: "rgba(46,204,113,0.2)",
+    verse: '"Envy is the art of counting another\'s blessings instead of your own."',
+    desc: "you are envy — and it's not petty. it's not about wanting someone's shoes or their job title. it's a deep, gnawing awareness of everything just out of reach, and the specific ache of watching others have it. you notice everything. you remember everything. you know exactly what you deserve and exactly who has it instead, and that knowledge never quite leaves. but here's what people miss about envy — it's actually just love with nowhere to go. you care intensely. you want so much. that hunger is the realest thing about you.",
+    traits: ["hyper-observant", "remembers everything", "quietly competitive", "wants deeply", "turns longing into fuel"]
+  },
+  wrath: {
+    symbol: "⚔",
+    name: "Wrath",
+    latin: "Ira",
+    tagline: "the sin that burns clean",
+    color: "#e74c3c",
+    glow: "rgba(231,76,60,0.25)",
+    verse: '"Anger is a wind which blows out the lamp of the mind."',
+    desc: "you are wrath — not the explosive kind necessarily, though you can go there. it's more that you have an internal sense of justice so finely tuned that violations of it feel physical. you notice when things are unfair. you remember wrongs done to people you love. you don't forgive easily, and when you do it's a deliberate choice not a feeling. people who've never seen you angry don't know you. people who have, don't forget it. the fire in you isn't a flaw — it's the proof that you actually care about things. you just care... a lot.",
+    traits: ["fierce sense of justice", "protective to a fault", "forgives deliberately", "nothing petty about it", "the kind worth having in your corner"]
+  },
+  sloth: {
+    symbol: "☽",
+    name: "Sloth",
+    latin: "Acedia",
+    tagline: "the sin of a thousand unfinished things",
+    color: "#9b59b6",
+    glow: "rgba(155,89,182,0.2)",
+    verse: '"The sluggard craves and gets nothing, but the desires of the diligent are fully satisfied."',
+    desc: "you are sloth — but not laziness, not really. acedia is the older word and it means something closer to spiritual numbness. a disconnection from the things that are supposed to matter. you can be brilliantly capable when something actually moves you — the problem is that so little does, and the effort of pretending it does is exhausting. you live in your head. you've started more things than you've finished. you have a deep, comfortable relationship with stillness that other people find unnerving. the world wants urgency from you. you're not sure it deserves it.",
+    traits: ["lives inside their head", "reserves energy ruthlessly", "brilliant when moved", "comfortable with stillness", "allergic to urgency"]
+  },
+  greed: {
+    symbol: "◆",
+    name: "Greed",
+    latin: "Avaritia",
+    tagline: "the sin that never says enough",
+    color: "#f39c12",
+    glow: "rgba(243,156,18,0.22)",
+    verse: '"The love of money is the root of all evil."',
+    desc: "you are greed — and it goes way beyond money. it's about acquisition in every sense. knowledge, experiences, connections, options, time. you want more of everything that matters to you and you're strategic about getting it. you don't waste. you don't settle. you're always calculating, always aware of what you have and what you're missing, always with a plan. people might call you selfish but you think of it as knowing your own value and refusing to undersell it. you've watched too many people give everything away and end up with nothing. you won't make that mistake.",
+    traits: ["always calculating", "never settles", "knows their own worth", "collects what matters", "refuses to undersell"]
+  },
+  gluttony: {
+    symbol: "❧",
+    name: "Gluttony",
+    latin: "Gula",
+    tagline: "the sin of wanting everything fully",
+    color: "#e67e22",
+    glow: "rgba(230,126,34,0.22)",
+    verse: '"Tell me what you eat and I will tell you what you are."',
+    desc: "you are gluttony — not excess for its own sake, but a total, consuming commitment to experience. when you love something you go all the way in. you don't do anything halfway. food, music, people, ideas — you want the full version of everything, the most intense version, the one that leaves a mark. you have strong opinions about pleasure and no patience for people who treat enjoyment like something to be rationed. moderation has its place; that place is not here, not with you, not for the things that actually matter. you're alive in a way some people never manage.",
+    traits: ["goes all the way in", "strong sensory opinions", "no patience for halfway", "intensely alive", "knows how to enjoy"]
+  },
+  lust: {
+    symbol: "♥",
+    name: "Lust",
+    latin: "Luxuria",
+    tagline: "the sin of wanting too completely",
+    color: "#e91e8c",
+    glow: "rgba(233,30,140,0.22)",
+    verse: '"The heart wants what it wants — or else it does not care."',
+    desc: "you are lust — and it's not just physical, it never was. it's an intensity of wanting that applies to everything you care about. people, ideas, places, moments. when you're interested in something you're consumed by it. when you love someone you want to know everything about them, be near them, understand them completely. there's a heat to the way you move through the world that other people feel and don't always know what to do with. you've been called too much before. you disagree. you think most people are not nearly enough.",
+    traits: ["wants completely", "emotionally consuming", "pulls people in", "feels everything at full volume", "too much for the wrong ones"]
+  }
+};
+
+const questions = [
+  {
+    text: "someone takes credit for your work in front of people who matter. you—",
+    options: [
+      { letter: "A", text: "correct the record immediately, calmly, in front of everyone", scores: { pride: 3, envy: 0, wrath: 2, sloth: 0, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "say nothing now but you don't forget it — ever", scores: { pride: 1, envy: 3, wrath: 2, sloth: 0, greed: 0, gluttony: 0, lust: 0 } },
+      { letter: "C", text: "confront them privately after. this will be resolved.", scores: { pride: 1, envy: 0, wrath: 3, sloth: 0, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "D", text: "let it go. the drama isn't worth your energy.", scores: { pride: 0, envy: 0, wrath: 0, sloth: 3, greed: 0, gluttony: 1, lust: 1 } },
+    ]
+  },
+  {
+    text: "your honest relationship with compliments is—",
+    options: [
+      { letter: "A", text: "you accept them as accurate. you know what you are.", scores: { pride: 3, envy: 0, wrath: 0, sloth: 0, greed: 1, gluttony: 0, lust: 1 } },
+      { letter: "B", text: "you like them but immediately wonder what they have that you don't", scores: { pride: 0, envy: 3, wrath: 0, sloth: 0, greed: 1, gluttony: 0, lust: 1 } },
+      { letter: "C", text: "they feel good but you don't trust them easily", scores: { pride: 1, envy: 1, wrath: 2, sloth: 0, greed: 0, gluttony: 0, lust: 1 } },
+      { letter: "D", text: "you drink them in completely — give you more", scores: { pride: 0, envy: 0, wrath: 0, sloth: 0, greed: 1, gluttony: 3, lust: 2 } },
+    ]
+  },
+  {
+    text: "you're waiting in a long, slow line that isn't moving. you feel—",
+    options: [
+      { letter: "A", text: "above this. you shouldn't have to be here.", scores: { pride: 3, envy: 0, wrath: 1, sloth: 0, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "annoyed watching people who got here later get served first", scores: { pride: 0, envy: 3, wrath: 2, sloth: 0, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "C", text: "genuinely angry. this is a system failure and someone is responsible.", scores: { pride: 0, envy: 0, wrath: 3, sloth: 0, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "D", text: "fine. you zoned out immediately. time is fake anyway.", scores: { pride: 0, envy: 0, wrath: 0, sloth: 3, greed: 0, gluttony: 1, lust: 1 } },
+    ]
+  },
+  {
+    text: "someone you know just got something you've wanted for a long time. your first real thought is—",
+    options: [
+      { letter: "A", text: "good for them. you'll get there too, on your terms.", scores: { pride: 3, envy: 0, wrath: 0, sloth: 0, greed: 2, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "why them. why not you. what do they have that you don't.", scores: { pride: 0, envy: 3, wrath: 1, sloth: 0, greed: 2, gluttony: 0, lust: 0 } },
+      { letter: "C", text: "if you deserved it less than me, that's actually unfair.", scores: { pride: 1, envy: 1, wrath: 3, sloth: 0, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "D", text: "you're happy for them. genuinely. it doesn't affect you.", scores: { pride: 0, envy: 0, wrath: 0, sloth: 2, greed: 0, gluttony: 3, lust: 1 } },
+    ]
+  },
+  {
+    text: "your idea of a perfect day alone looks like—",
+    options: [
+      { letter: "A", text: "working on something you're proud of, at your own pace", scores: { pride: 3, envy: 0, wrath: 0, sloth: 1, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "consuming everything — food, music, shows, all of it", scores: { pride: 0, envy: 0, wrath: 0, sloth: 1, greed: 1, gluttony: 3, lust: 1 } },
+      { letter: "C", text: "doing absolutely nothing and having zero guilt about it", scores: { pride: 0, envy: 0, wrath: 0, sloth: 3, greed: 0, gluttony: 1, lust: 0 } },
+      { letter: "D", text: "thinking about someone you want. planning something. wanting.", scores: { pride: 0, envy: 1, wrath: 0, sloth: 0, greed: 1, gluttony: 0, lust: 3 } },
+    ]
+  },
+  {
+    text: "you would describe your relationship with rules as—",
+    options: [
+      { letter: "A", text: "they apply to other people. you operate on a different level.", scores: { pride: 3, envy: 0, wrath: 1, sloth: 0, greed: 2, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "you follow them when they benefit you and bend them when they don't", scores: { pride: 1, envy: 0, wrath: 0, sloth: 0, greed: 3, gluttony: 1, lust: 1 } },
+      { letter: "C", text: "you follow them until they're unjust. then you don't.", scores: { pride: 1, envy: 0, wrath: 3, sloth: 0, greed: 0, gluttony: 0, lust: 1 } },
+      { letter: "D", text: "you forget they exist until someone reminds you", scores: { pride: 0, envy: 0, wrath: 0, sloth: 3, greed: 0, gluttony: 2, lust: 1 } },
+    ]
+  },
+  {
+    text: "when you really want something, you—",
+    options: [
+      { letter: "A", text: "go after it without asking permission", scores: { pride: 2, envy: 0, wrath: 1, sloth: 0, greed: 3, gluttony: 1, lust: 1 } },
+      { letter: "B", text: "think about it constantly until having it is all you can imagine", scores: { pride: 0, envy: 2, wrath: 0, sloth: 0, greed: 1, gluttony: 1, lust: 3 } },
+      { letter: "C", text: "want it harder the more you can't have it", scores: { pride: 1, envy: 2, wrath: 2, sloth: 0, greed: 2, gluttony: 1, lust: 1 } },
+      { letter: "D", text: "wait and see. maybe it'll come to you.", scores: { pride: 0, envy: 1, wrath: 0, sloth: 3, greed: 0, gluttony: 2, lust: 0 } },
+    ]
+  },
+  {
+    text: "your worst quality, if you're being honest, is probably—",
+    options: [
+      { letter: "A", text: "you make people feel like they're not enough", scores: { pride: 3, envy: 1, wrath: 0, sloth: 0, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "you can't stop comparing yourself to everyone around you", scores: { pride: 0, envy: 3, wrath: 0, sloth: 0, greed: 1, gluttony: 0, lust: 1 } },
+      { letter: "C", text: "you hold grudges longer than is healthy", scores: { pride: 1, envy: 1, wrath: 3, sloth: 0, greed: 0, gluttony: 0, lust: 0 } },
+      { letter: "D", text: "you disappear when things get too demanding", scores: { pride: 0, envy: 0, wrath: 0, sloth: 3, greed: 0, gluttony: 1, lust: 1 } },
+    ]
+  },
+  {
+    text: "you think about money—",
+    options: [
+      { letter: "A", text: "as a reflection of worth. yours is high.", scores: { pride: 3, envy: 0, wrath: 0, sloth: 0, greed: 3, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "a lot. specifically who has more than you and why.", scores: { pride: 0, envy: 3, wrath: 1, sloth: 0, greed: 2, gluttony: 0, lust: 0 } },
+      { letter: "C", text: "as a tool. you want enough to do exactly what you want.", scores: { pride: 1, envy: 0, wrath: 0, sloth: 1, greed: 2, gluttony: 3, lust: 1 } },
+      { letter: "D", text: "rarely. there are more interesting things to think about.", scores: { pride: 0, envy: 0, wrath: 0, sloth: 2, greed: 0, gluttony: 1, lust: 3 } },
+    ]
+  },
+  {
+    text: "your friends would say you're hardest to deal with when—",
+    options: [
+      { letter: "A", text: "you think you're the only one who knows how to do things right", scores: { pride: 3, envy: 0, wrath: 1, sloth: 0, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "someone else is getting more attention than you", scores: { pride: 1, envy: 3, wrath: 1, sloth: 0, greed: 0, gluttony: 0, lust: 1 } },
+      { letter: "C", text: "you've decided something is unfair and won't let it go", scores: { pride: 0, envy: 1, wrath: 3, sloth: 0, greed: 0, gluttony: 0, lust: 0 } },
+      { letter: "D", text: "you go completely unreachable for days without warning", scores: { pride: 0, envy: 0, wrath: 0, sloth: 3, greed: 0, gluttony: 1, lust: 2 } },
+    ]
+  },
+  {
+    text: "your ideal partner is someone who—",
+    options: [
+      { letter: "A", text: "matches your level. maybe challenges it. maybe.", scores: { pride: 3, envy: 0, wrath: 0, sloth: 0, greed: 2, gluttony: 0, lust: 1 } },
+      { letter: "B", text: "you can't stop thinking about even when you try", scores: { pride: 0, envy: 0, wrath: 0, sloth: 0, greed: 0, gluttony: 1, lust: 3 } },
+      { letter: "C", text: "is in your corner no matter what, ride or die", scores: { pride: 0, envy: 0, wrath: 3, sloth: 1, greed: 0, gluttony: 1, lust: 1 } },
+      { letter: "D", text: "asks nothing of you and still stays", scores: { pride: 0, envy: 0, wrath: 0, sloth: 3, greed: 1, gluttony: 2, lust: 1 } },
+    ]
+  },
+  {
+    text: "you're at a party. the person you're talking to is clearly more successful than you. you—",
+    options: [
+      { letter: "A", text: "feel nothing. you'll surpass them. this is just timing.", scores: { pride: 3, envy: 0, wrath: 0, sloth: 0, greed: 2, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "smile and immediately start cataloguing what they have that you don't", scores: { pride: 0, envy: 3, wrath: 1, sloth: 0, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "C", text: "find them interesting if they earned it. intolerable if they didn't.", scores: { pride: 1, envy: 1, wrath: 3, sloth: 0, greed: 0, gluttony: 0, lust: 0 } },
+      { letter: "D", text: "zone out and think about what you'd rather be doing", scores: { pride: 0, envy: 0, wrath: 0, sloth: 3, greed: 0, gluttony: 2, lust: 2 } },
+    ]
+  },
+  {
+    text: "the last time you apologized, it was because—",
+    options: [
+      { letter: "A", text: "you decided it was strategically the right move", scores: { pride: 3, envy: 0, wrath: 1, sloth: 0, greed: 3, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "you said something about someone's success that came out wrong", scores: { pride: 0, envy: 3, wrath: 0, sloth: 0, greed: 0, gluttony: 0, lust: 0 } },
+      { letter: "C", text: "you went too far when you were angry and actually regretted it", scores: { pride: 0, envy: 0, wrath: 3, sloth: 0, greed: 0, gluttony: 0, lust: 1 } },
+      { letter: "D", text: "you'd disappeared for too long and owed someone an explanation", scores: { pride: 0, envy: 0, wrath: 0, sloth: 3, greed: 0, gluttony: 1, lust: 2 } },
+    ]
+  },
+  {
+    text: "your body language when you walk into a room is—",
+    options: [
+      { letter: "A", text: "deliberate. you know when you've arrived.", scores: { pride: 3, envy: 0, wrath: 1, sloth: 0, greed: 1, gluttony: 0, lust: 2 } },
+      { letter: "B", text: "scanning. always reading the room, noting who's there.", scores: { pride: 0, envy: 3, wrath: 0, sloth: 0, greed: 1, gluttony: 0, lust: 1 } },
+      { letter: "C", text: "present and direct. you look at people.", scores: { pride: 1, envy: 0, wrath: 2, sloth: 0, greed: 0, gluttony: 1, lust: 3 } },
+      { letter: "D", text: "you drift in and find the quietest corner", scores: { pride: 0, envy: 0, wrath: 0, sloth: 3, greed: 0, gluttony: 2, lust: 0 } },
+    ]
+  },
+  {
+    text: "you're honest with yourself about the fact that you—",
+    options: [
+      { letter: "A", text: "think most people are operating well below your level", scores: { pride: 3, envy: 0, wrath: 1, sloth: 0, greed: 1, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "keep score in ways others don't even realize", scores: { pride: 1, envy: 3, wrath: 1, sloth: 0, greed: 2, gluttony: 0, lust: 0 } },
+      { letter: "C", text: "are capable of real rage when the situation calls for it", scores: { pride: 0, envy: 0, wrath: 3, sloth: 0, greed: 0, gluttony: 1, lust: 1 } },
+      { letter: "D", text: "want things intensely but act on them rarely", scores: { pride: 0, envy: 1, wrath: 0, sloth: 2, greed: 1, gluttony: 2, lust: 3 } },
+    ]
+  },
+  {
+    text: "what do you do with a feeling you can't resolve?",
+    options: [
+      { letter: "A", text: "bury it under discipline and output until it stops mattering", scores: { pride: 3, envy: 0, wrath: 0, sloth: 0, greed: 2, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "sit with it. you and the feeling in a room together for days.", scores: { pride: 0, envy: 2, wrath: 0, sloth: 3, greed: 0, gluttony: 1, lust: 1 } },
+      { letter: "C", text: "find somewhere to put it. channel it into something.", scores: { pride: 1, envy: 1, wrath: 3, sloth: 0, greed: 1, gluttony: 1, lust: 1 } },
+      { letter: "D", text: "eat something really good, or fill the space with something beautiful", scores: { pride: 0, envy: 0, wrath: 0, sloth: 1, greed: 0, gluttony: 3, lust: 2 } },
+    ]
+  },
+  {
+    text: "when something good happens to you, your first instinct is to—",
+    options: [
+      { letter: "A", text: "think — finally. this was always going to happen.", scores: { pride: 3, envy: 0, wrath: 0, sloth: 0, greed: 2, gluttony: 0, lust: 0 } },
+      { letter: "B", text: "wonder what comes next. immediately. you can't just be here.", scores: { pride: 1, envy: 2, wrath: 0, sloth: 0, greed: 3, gluttony: 1, lust: 1 } },
+      { letter: "C", text: "feel it completely. let it wash over you. stay in it.", scores: { pride: 0, envy: 0, wrath: 0, sloth: 1, greed: 0, gluttony: 3, lust: 2 } },
+      { letter: "D", text: "want to share it immediately with one specific person", scores: { pride: 0, envy: 0, wrath: 1, sloth: 0, greed: 0, gluttony: 1, lust: 3 } },
+    ]
+  },
+  {
+    text: "what kind of sinner are you, really?",
+    options: [
+      { letter: "A", text: "the kind who doesn't think it's a sin at all", scores: { pride: 3, envy: 0, wrath: 1, sloth: 0, greed: 2, gluttony: 1, lust: 0 } },
+      { letter: "B", text: "the kind who knows exactly what they're doing and does it anyway", scores: { pride: 1, envy: 1, wrath: 2, sloth: 0, greed: 3, gluttony: 2, lust: 2 } },
+      { letter: "C", text: "the kind who falls into it like a warm bath and doesn't come out", scores: { pride: 0, envy: 0, wrath: 0, sloth: 2, greed: 0, gluttony: 3, lust: 3 } },
+      { letter: "D", text: "the kind who's just tired and the sin is the only thing that feels easy", scores: { pride: 0, envy: 2, wrath: 0, sloth: 3, greed: 0, gluttony: 1, lust: 1 } },
+    ]
+  },
+];
+
+let current = 0;
+let scores = { pride: 0, envy: 0, wrath: 0, sloth: 0, greed: 0, gluttony: 0, lust: 0 };
+let answers = new Array(questions.length).fill(null);
+
+function render() {
+  const container = document.getElementById('questions');
+  container.innerHTML = '';
+  questions.forEach((q, qi) => {
+    const block = document.createElement('div');
+    block.className = 'question-block' + (qi === current ? ' active' : '');
+    block.id = 'q' + qi;
+    block.innerHTML = `
+      <p class="q-number">${ROMAN[qi]} · of ${ROMAN[questions.length - 1]}</p>
+      <p class="q-text">${q.text}</p>
+      <div class="options">
+        ${q.options.map((opt, oi) => `
+          <div class="option${answers[qi] === oi ? ' selected' : ''}" data-q="${qi}" data-o="${oi}">
+            <span class="opt-letter">${opt.letter}</span>
+            <span class="opt-text">${opt.text}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="btn-wrap">
+        ${qi > 0 ? `<button class="btn-prev" data-q="${qi}">← back</button>` : '<span></span>'}
+        ${qi === questions.length - 1 && answers[qi] !== null
+          ? `<button class="btn-next visible" data-q="${qi}">render judgment →</button>`
+          : '<span></span>'}
+      </div>
+    `;
+    container.appendChild(block);
+  });
+  updateProgress();
+  attachListeners();
+}
+
+function attachListeners() {
+  document.querySelectorAll('.option').forEach(el => {
+    el.addEventListener('click', () => {
+      const qi = parseInt(el.dataset.q);
+      const oi = parseInt(el.dataset.o);
+      answers[qi] = oi;
+      document.querySelectorAll(`[data-q="${qi}"].option`).forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      setTimeout(() => {
+        if (qi < questions.length - 1) {
+          current = qi + 1;
+          render();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          render();
+        }
+      }, 380);
+    });
+  });
+  document.querySelectorAll('.btn-prev').forEach(btn => {
+    btn.addEventListener('click', () => {
+      current = Math.max(0, parseInt(btn.dataset.q) - 1);
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+  document.querySelectorAll('.btn-next').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (answers[parseInt(btn.dataset.q)] !== null) showResult();
+    });
+  });
+}
+
+function updateProgress() {
+  const answered = answers.filter(a => a !== null).length;
+  const pct = Math.round((answered / questions.length) * 100);
+  document.getElementById('prog-text').textContent = `${ROMAN[current]} · of ${ROMAN[questions.length - 1]}`;
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+function showResult() {
+  scores = { pride: 0, envy: 0, wrath: 0, sloth: 0, greed: 0, gluttony: 0, lust: 0 };
+  questions.forEach((q, qi) => {
+    if (answers[qi] !== null) {
+      const s = q.options[answers[qi]].scores;
+      Object.keys(s).forEach(k => scores[k] += s[k]);
+    }
+  });
+
+  const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+  const s = sins[winner];
+
+  document.getElementById('questions').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+
+  const resultEl = document.getElementById('result');
+  resultEl.innerHTML = `
+    <div class="result-card" style="--sin-color:${s.color};--sin-glow:${s.glow}">
+      <div class="result-header">
+        <span class="result-sin-symbol">${s.symbol}</span>
+        <p class="result-label">your sin is</p>
+        <h2 class="result-name">${s.name}</h2>
+        <p class="result-tagline">${s.latin} · ${s.tagline}</p>
+      </div>
+      <div class="result-body">
+        <p class="result-verse">${s.verse}</p>
+        <p class="result-desc">${s.desc}</p>
+        <div class="result-traits">
+          ${s.traits.map(t => `<span class="trait">${t}</span>`).join('')}
+        </div>
+        <div class="result-actions">
+          <button class="btn-share" onclick="shareResult('${winner}')">
+            <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+            share verdict
+          </button>
+          <button class="btn-retry" onclick="restart()">confess again ↺</button>
+        </div>
+      </div>
+    </div>
+  `;
+  resultEl.classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function shareResult(winnerId) {
+  const s = sins[winnerId];
+  const W = 720, H = 1080;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  const PAD = 68;
+
+  // bg
+  ctx.fillStyle = '#0d0a0e';
+  ctx.fillRect(0, 0, W, H);
+
+  // sin color glow top
+  const g1 = ctx.createRadialGradient(W/2, 0, 0, W/2, 0, 500);
+  g1.addColorStop(0, s.glow.replace('0.2', '0.3').replace('0.22', '0.3').replace('0.25', '0.3'));
+  g1.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g1; ctx.fillRect(0, 0, W, H);
+
+  // dark vignette bottom
+  const g2 = ctx.createRadialGradient(W/2, H, 0, W/2, H, 600);
+  g2.addColorStop(0, 'rgba(60,20,20,0.15)');
+  g2.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
+
+  // border
+  ctx.strokeStyle = '#2a2035';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(32, 32, W - 64, H - 64);
+
+  // top accent line in sin color
+  ctx.strokeStyle = s.color;
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(32, 32); ctx.lineTo(W - 32, 32); ctx.stroke();
+
+  // symbol glow
+  const gSym = ctx.createRadialGradient(W/2, 170, 0, W/2, 170, 80);
+  gSym.addColorStop(0, s.glow);
+  gSym.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gSym; ctx.fillRect(0, 0, W, H);
+
+  // symbol text
+  ctx.textAlign = 'center';
+  ctx.font = 'bold 64px Georgia, serif';
+  ctx.fillStyle = s.color;
+  ctx.globalAlpha = 0.9;
+  ctx.fillText(s.symbol, W/2, 185);
+  ctx.globalAlpha = 1;
+
+  // "your sin is"
+  ctx.font = '300 15px sans-serif';
+  ctx.fillStyle = '#6a5a7a';
+  ctx.letterSpacing = '4px';
+  ctx.fillText('YOUR SIN IS', W/2, 230);
+
+  // sin name
+  ctx.fillStyle = s.color;
+  ctx.letterSpacing = '2px';
+  let nameSize = 78;
+  ctx.font = `bold ${nameSize}px Georgia, serif`;
+  while (ctx.measureText(s.name).width > W - PAD * 2 && nameSize > 40) {
+    nameSize -= 2;
+    ctx.font = `bold ${nameSize}px Georgia, serif`;
+  }
+  ctx.fillText(s.name, W/2, 318);
+
+  // latin + tagline
+  ctx.font = 'italic 300 18px Georgia, serif';
+  ctx.fillStyle = '#4a3a5a';
+  ctx.letterSpacing = '1px';
+  ctx.fillText(`${s.latin}  ·  ${s.tagline}`, W/2, 358);
+
+  // divider
+  ctx.strokeStyle = '#2a2035';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(W/2 - 90, 385); ctx.lineTo(W/2 + 90, 385); ctx.stroke();
+
+  // verse
+  ctx.font = 'italic 17px Georgia, serif';
+  ctx.fillStyle = s.color;
+  ctx.globalAlpha = 0.55;
+  ctx.letterSpacing = '0px';
+  // word wrap verse
+  const verseWords = s.verse.split(' ');
+  let vLine = '', vy = 420, vMaxW = W - PAD * 2.2;
+  for (const w of verseWords) {
+    const test = vLine + (vLine ? ' ' : '') + w;
+    if (ctx.measureText(test).width > vMaxW && vLine) {
+      ctx.fillText(vLine, W/2, vy); vLine = w; vy += 28;
+    } else vLine = test;
+  }
+  if (vLine) { ctx.fillText(vLine, W/2, vy); vy += 28; }
+  ctx.globalAlpha = 1;
+
+  // desc
+  ctx.font = '17px Georgia, serif';
+  ctx.fillStyle = '#8a7a9a';
+  let dy = vy + 28, dMaxW = W - PAD * 2.2, dLineH = 28;
+  const descWords = s.desc.split(' ');
+  let dLine = '';
+  for (const w of descWords) {
+    const test = dLine + (dLine ? ' ' : '') + w;
+    if (ctx.measureText(test).width > dMaxW && dLine) {
+      ctx.fillText(dLine, W/2, dy); dLine = w; dy += dLineH;
+    } else dLine = test;
+  }
+  if (dLine) { ctx.fillText(dLine, W/2, dy); dy += dLineH; }
+
+  // traits
+  dy += 20;
+  ctx.font = '13px sans-serif';
+  ctx.fillStyle = '#3d3050';
+  ctx.letterSpacing = '1.5px';
+  const tStr = s.traits.join('   ·   ');
+  if (ctx.measureText(tStr).width > W - PAD * 2) {
+    const half = Math.ceil(s.traits.length / 2);
+    ctx.fillText(s.traits.slice(0, half).join('  ·  '), W/2, dy); dy += 22;
+    ctx.fillText(s.traits.slice(half).join('  ·  '), W/2, dy); dy += 22;
+  } else {
+    ctx.fillText(tStr, W/2, dy);
+  }
+
+  // watermark
+  ctx.font = '300 13px sans-serif';
+  ctx.fillStyle = s.color;
+  ctx.globalAlpha = 0.3;
+  ctx.letterSpacing = '0.5px';
+  ctx.fillText('✦  which sin claims you?  ·  envyforyou.github.io/quiz/sinner', W/2, H - 44);
+  ctx.globalAlpha = 1;
+
+  canvas.toBlob(async (blob) => {
+    const file = new File([blob], `${s.name.toLowerCase()}-verdict.png`, { type: 'image/png' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: `my sin is ${s.name}`,
+          text: `${s.name} — ${s.tagline}\n\nwhich sin claims you? → ${window.location.href}`,
+        });
+      } catch (e) {
+        if (e.name !== 'AbortError') fallbackDownload(canvas, s.name);
+      }
+    } else {
+      fallbackDownload(canvas, s.name);
+    }
+  }, 'image/png');
+}
+
+function fallbackDownload(canvas, name) {
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = `${name.toLowerCase()}-verdict.png`;
+  a.click();
+}
+
+function restart() {
+  current = 0;
+  answers = new Array(questions.length).fill(null);
+  scores = { pride: 0, envy: 0, wrath: 0, sloth: 0, greed: 0, gluttony: 0, lust: 0 };
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('questions').style.display = '';
+  document.getElementById('progress-wrap').style.display = '';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+</script>
+</body>
+</html>
