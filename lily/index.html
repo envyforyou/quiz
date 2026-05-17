@@ -682,93 +682,128 @@ function showResult() {
 
 async function shareResult(winnerId) {
   const r = results[winnerId];
-  const btn = document.getElementById('btn-share-native');
 
   // ── draw the share card on canvas ──
-  const W = 720, H = 960;
+  const W = 720, H = 1080;
   const canvas = document.createElement('canvas');
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext('2d');
 
+  const PAD = 64;
+
   // background
   const bg = ctx.createLinearGradient(0, 0, W, H);
   bg.addColorStop(0, '#141920');
-  bg.addColorStop(1, '#1c2530');
+  bg.addColorStop(1, '#1a2530');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
   // teal glow top-left
-  const g1 = ctx.createRadialGradient(80, 120, 0, 80, 120, 320);
-  g1.addColorStop(0, 'rgba(78,205,196,0.1)');
+  const g1 = ctx.createRadialGradient(60, 100, 0, 60, 100, 380);
+  g1.addColorStop(0, 'rgba(78,205,196,0.12)');
   g1.addColorStop(1, 'rgba(78,205,196,0)');
   ctx.fillStyle = g1; ctx.fillRect(0, 0, W, H);
 
   // teal glow bottom-right
-  const g2 = ctx.createRadialGradient(W - 80, H - 120, 0, W - 80, H - 120, 320);
-  g2.addColorStop(0, 'rgba(78,205,196,0.07)');
+  const g2 = ctx.createRadialGradient(W - 60, H - 100, 0, W - 60, H - 100, 380);
+  g2.addColorStop(0, 'rgba(78,205,196,0.08)');
   g2.addColorStop(1, 'rgba(78,205,196,0)');
   ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
 
-  // thin border
+  // border
   ctx.strokeStyle = '#2a3a4a';
   ctx.lineWidth = 1.5;
-  ctx.strokeRect(28, 28, W - 56, H - 56);
+  ctx.strokeRect(32, 32, W - 64, H - 64);
 
-  // icon
-  ctx.font = '88px serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(r.icon, W / 2, 200);
-
-  // "you are a" label
-  ctx.font = '300 22px sans-serif';
-  ctx.fillStyle = '#5a7a8a';
-  ctx.letterSpacing = '0.2em';
-  ctx.fillText('you are a', W / 2, 280);
-
-  // lily name
-  ctx.font = 'italic 300 72px Georgia, serif';
+  // icon — draw a glowing teal circle instead of emoji
+  const cx = W / 2, iy = 140;
+  const gIcon = ctx.createRadialGradient(cx, iy, 0, cx, iy, 48);
+  gIcon.addColorStop(0, 'rgba(78,205,196,0.25)');
+  gIcon.addColorStop(1, 'rgba(78,205,196,0)');
+  ctx.fillStyle = gIcon;
+  ctx.beginPath(); ctx.arc(cx, iy, 48, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(78,205,196,0.6)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(cx, iy, 32, 0, Math.PI * 2); ctx.stroke();
+  // inner dot
   ctx.fillStyle = '#4ecdc4';
-  ctx.fillText(r.name, W / 2, 370);
+  ctx.beginPath(); ctx.arc(cx, iy, 6, 0, Math.PI * 2); ctx.fill();
 
-  // tagline
-  ctx.font = '300 26px sans-serif';
-  ctx.fillStyle = '#5a7a8a';
-  ctx.fillText(r.tagline, W / 2, 430);
+  // "you are a"
+  ctx.textAlign = 'center';
+  ctx.font = '300 18px sans-serif';
+  ctx.fillStyle = '#4a6a7a';
+  ctx.letterSpacing = '4px';
+  ctx.fillText('YOU ARE A', W / 2, 220);
 
-  // divider line
+  // lily name — scale down if too wide
+  ctx.fillStyle = '#4ecdc4';
+  ctx.letterSpacing = '0px';
+  let nameFontSize = 68;
+  ctx.font = `italic 300 ${nameFontSize}px Georgia, serif`;
+  while (ctx.measureText(r.name).width > W - PAD * 2 && nameFontSize > 36) {
+    nameFontSize -= 2;
+    ctx.font = `italic 300 ${nameFontSize}px Georgia, serif`;
+  }
+  ctx.fillText(r.name, W / 2, 300);
+
+  // tagline — scale down if too wide
+  ctx.fillStyle = '#4a6a7a';
+  let tagSize = 20;
+  ctx.font = `300 ${tagSize}px sans-serif`;
+  ctx.letterSpacing = '1px';
+  while (ctx.measureText(r.tagline).width > W - PAD * 2 && tagSize > 13) {
+    tagSize -= 1;
+    ctx.font = `300 ${tagSize}px sans-serif`;
+  }
+  ctx.fillText(r.tagline, W / 2, 345);
+
+  // divider
   ctx.strokeStyle = '#2a3a4a';
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(W / 2 - 100, 466); ctx.lineTo(W / 2 + 100, 466);
+  ctx.moveTo(W / 2 - 80, 375); ctx.lineTo(W / 2 + 80, 375);
   ctx.stroke();
 
-  // description — word wrap
-  ctx.font = '300 24px Georgia, serif';
-  ctx.fillStyle = '#b8cdd8';
+  // description — word wrap with proper padding
+  ctx.font = '300 19px Georgia, serif';
+  ctx.fillStyle = '#8aaabb';
+  ctx.letterSpacing = '0px';
   ctx.textAlign = 'center';
+  const maxW = W - PAD * 2.5;
   const words = r.desc.split(' ');
-  let line = '', y = 520, maxW = W - 120;
+  let line = '', y = 420, lineH = 32;
   for (const word of words) {
     const test = line + (line ? ' ' : '') + word;
     if (ctx.measureText(test).width > maxW && line) {
       ctx.fillText(line, W / 2, y);
-      line = word; y += 36;
+      line = word; y += lineH;
     } else { line = test; }
   }
-  if (line) ctx.fillText(line, W / 2, y);
+  if (line) { ctx.fillText(line, W / 2, y); y += lineH; }
 
-  // traits
-  const traitY = y + 60;
-  ctx.font = '300 18px sans-serif';
-  ctx.fillStyle = '#3a4f62';
-  const traitLine = r.traits.join('  ·  ');
-  ctx.fillText(traitLine, W / 2, traitY);
+  // traits — wrap into two lines if needed
+  y += 32;
+  ctx.font = '300 14px sans-serif';
+  ctx.fillStyle = '#2e4a5a';
+  ctx.letterSpacing = '1.5px';
+  const traitStr = r.traits.join('   ·   ');
+  if (ctx.measureText(traitStr).width > W - PAD * 2) {
+    const half = Math.ceil(r.traits.length / 2);
+    const line1 = r.traits.slice(0, half).join('  ·  ');
+    const line2 = r.traits.slice(half).join('  ·  ');
+    ctx.fillText(line1, W / 2, y); y += 24;
+    ctx.fillText(line2, W / 2, y); y += 24;
+  } else {
+    ctx.fillText(traitStr, W / 2, y); y += 24;
+  }
 
-  // quiz name watermark
-  ctx.font = '200 20px sans-serif';
+  // watermark
+  ctx.font = '300 15px sans-serif';
   ctx.fillStyle = '#4ecdc4';
-  ctx.globalAlpha = 0.5;
-  ctx.fillText('✿ which lily are you? · envyforyou.github.io/quiz/lily', W / 2, H - 60);
+  ctx.globalAlpha = 0.35;
+  ctx.letterSpacing = '0.5px';
+  ctx.fillText('✿  which lily are you?  ·  envyforyou.github.io/quiz/lily', W / 2, H - 44);
   ctx.globalAlpha = 1;
 
   // ── convert to blob and share ──
@@ -786,7 +821,6 @@ async function shareResult(winnerId) {
         if (e.name !== 'AbortError') fallbackDownload(canvas, r.name);
       }
     } else {
-      // fallback: just download the image
       fallbackDownload(canvas, r.name);
     }
   }, 'image/png');
