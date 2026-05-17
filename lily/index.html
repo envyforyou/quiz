@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Which Lily Are You?</title>
+<link rel="icon" href="lily.png">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -433,64 +434,64 @@ const questions = [
   {
     text: "it's a quiet afternoon and you have it all to yourself. what does that look like?",
     options: [
-      { letter: "a", text: "curled up somewhere cozy, deep in a book or your own thoughts", scores: { stargazer: 1, calla: 2, tiger: 0, white: 2, water: 1 } },
-      { letter: "b", text: "out somewhere — exploring, walking, finding something new", scores: { stargazer: 1, calla: 0, tiger: 3, white: 0, water: 2 } },
-      { letter: "c", text: "working on something — a project, a craft, anything with your hands", scores: { stargazer: 2, calla: 1, tiger: 1, white: 0, water: 2 } },
-      { letter: "d", text: "doing absolutely nothing on purpose. rest is productive too.", scores: { stargazer: 0, calla: 2, tiger: 0, white: 3, water: 1 } },
+      { letter: "a", text: "curled up somewhere cozy, deep in a book or your own thoughts", scores: { stargazer: 1, calla: 2, tiger: 0, white: 2, water: 1, spider: 0, valley: 3 } },
+      { letter: "b", text: "out somewhere — exploring, walking, finding something new", scores: { stargazer: 1, calla: 0, tiger: 3, white: 0, water: 2, spider: 2, valley: 0 } },
+      { letter: "c", text: "working on something — a project, a craft, anything with your hands", scores: { stargazer: 2, calla: 1, tiger: 1, white: 0, water: 2, spider: 1, valley: 1 } },
+      { letter: "d", text: "doing absolutely nothing on purpose. rest is productive too.", scores: { stargazer: 0, calla: 2, tiger: 0, white: 3, water: 1, spider: 0, valley: 2 } },
     ]
   },
   {
     text: "someone you care about is going through something hard. your instinct is to—",
     options: [
-      { letter: "a", text: "show up. no questions asked. just be there.", scores: { stargazer: 1, calla: 1, tiger: 0, white: 3, water: 2 } },
-      { letter: "b", text: "figure out what they actually need and do that specific thing", scores: { stargazer: 2, calla: 2, tiger: 0, white: 1, water: 1 } },
-      { letter: "c", text: "give them space but check in quietly so they know you're around", scores: { stargazer: 1, calla: 3, tiger: 0, white: 1, water: 2 } },
-      { letter: "d", text: "distract them — plans, jokes, adventures. grief doesn't sit well with you.", scores: { stargazer: 0, calla: 0, tiger: 3, white: 0, water: 1 } },
+      { letter: "a", text: "show up. no questions asked. just be there.", scores: { stargazer: 1, calla: 1, tiger: 0, white: 3, water: 2, spider: 0, valley: 3 } },
+      { letter: "b", text: "figure out what they actually need and do that specific thing", scores: { stargazer: 2, calla: 2, tiger: 0, white: 1, water: 1, spider: 1, valley: 1 } },
+      { letter: "c", text: "give them space but check in quietly so they know you're around", scores: { stargazer: 1, calla: 3, tiger: 0, white: 1, water: 2, spider: 2, valley: 1 } },
+      { letter: "d", text: "distract them — plans, jokes, adventures. grief doesn't sit well with you.", scores: { stargazer: 0, calla: 0, tiger: 3, white: 0, water: 1, spider: 3, valley: 0 } },
     ]
   },
   {
     text: "how do you feel walking into a room full of people you don't know?",
     options: [
-      { letter: "a", text: "honestly kind of lit — you love meeting people", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 1 } },
-      { letter: "b", text: "fine. you'll find one interesting person and talk to them all night", scores: { stargazer: 1, calla: 2, tiger: 1, white: 1, water: 2 } },
-      { letter: "c", text: "quiet at first. warm up slowly but then you're fully there", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2 } },
-      { letter: "d", text: "mildly exhausted in advance but you'll manage and forget you were worried", scores: { stargazer: 0, calla: 3, tiger: 0, white: 1, water: 2 } },
+      { letter: "a", text: "honestly kind of lit — you love meeting people", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 1, spider: 1, valley: 1 } },
+      { letter: "b", text: "fine. you'll find one interesting person and talk to them all night", scores: { stargazer: 1, calla: 2, tiger: 1, white: 1, water: 2, spider: 2, valley: 1 } },
+      { letter: "c", text: "quiet at first. warm up slowly but then you're fully there", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2, spider: 0, valley: 3 } },
+      { letter: "d", text: "mildly exhausted in advance but you'll manage and forget you were worried", scores: { stargazer: 0, calla: 3, tiger: 0, white: 1, water: 2, spider: 1, valley: 2 } },
     ]
   },
   {
     text: "when you love something — a show, a song, a game — you tend to—",
     options: [
-      { letter: "a", text: "go deep. lore, theory, every detail. you want to understand it completely.", scores: { stargazer: 2, calla: 1, tiger: 0, white: 0, water: 3 } },
-      { letter: "b", text: "share it immediately. drag everyone you know into it.", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 0 } },
-      { letter: "c", text: "keep it close. it's yours. you don't need to explain it.", scores: { stargazer: 0, calla: 3, tiger: 0, white: 2, water: 1 } },
-      { letter: "d", text: "enjoy it quietly and let it just... exist in your life.", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2 } },
+      { letter: "a", text: "go deep. lore, theory, every detail. you want to understand it completely.", scores: { stargazer: 2, calla: 1, tiger: 0, white: 0, water: 3, spider: 2, valley: 0 } },
+      { letter: "b", text: "share it immediately. drag everyone you know into it.", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 0, spider: 0, valley: 2 } },
+      { letter: "c", text: "keep it close. it's yours. you don't need to explain it.", scores: { stargazer: 0, calla: 3, tiger: 0, white: 2, water: 1, spider: 3, valley: 1 } },
+      { letter: "d", text: "enjoy it quietly and let it just... exist in your life.", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2, spider: 0, valley: 3 } },
     ]
   },
   {
     text: "what does getting angry look like for you?",
     options: [
-      { letter: "a", text: "you don't hide it — you go quiet and people can feel it", scores: { stargazer: 1, calla: 3, tiger: 0, white: 2, water: 1 } },
-      { letter: "b", text: "you say what you think, directly, and then it's over", scores: { stargazer: 2, calla: 0, tiger: 3, white: 0, water: 1 } },
-      { letter: "c", text: "you let it simmer, think about it, and bring it up carefully later", scores: { stargazer: 1, calla: 2, tiger: 0, white: 1, water: 3 } },
-      { letter: "d", text: "you rarely get angry — mostly just tired or disappointed", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2 } },
+      { letter: "a", text: "you don't hide it — you go quiet and people can feel it", scores: { stargazer: 1, calla: 3, tiger: 0, white: 2, water: 1, spider: 3, valley: 0 } },
+      { letter: "b", text: "you say what you think, directly, and then it's over", scores: { stargazer: 2, calla: 0, tiger: 3, white: 0, water: 1, spider: 1, valley: 0 } },
+      { letter: "c", text: "you let it simmer, think about it, and bring it up carefully later", scores: { stargazer: 1, calla: 2, tiger: 0, white: 1, water: 3, spider: 1, valley: 2 } },
+      { letter: "d", text: "you rarely get angry — mostly just tired or disappointed", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2, spider: 0, valley: 3 } },
     ]
   },
   {
     text: "your closest friends would describe you as—",
     options: [
-      { letter: "a", text: "the one who shows up. reliable, steady, quietly essential.", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2 } },
-      { letter: "b", text: "surprising — people think they know you and then you show them something new", scores: { stargazer: 1, calla: 0, tiger: 2, white: 0, water: 3 } },
-      { letter: "c", text: "intense in the best way — real conversations only, no small talk", scores: { stargazer: 3, calla: 2, tiger: 0, white: 0, water: 1 } },
-      { letter: "d", text: "genuinely funny, hard to read, but when you're in — you're fully in", scores: { stargazer: 0, calla: 3, tiger: 1, white: 1, water: 1 } },
+      { letter: "a", text: "the one who shows up. reliable, steady, quietly essential.", scores: { stargazer: 0, calla: 1, tiger: 0, white: 3, water: 2, spider: 0, valley: 3 } },
+      { letter: "b", text: "surprising — people think they know you and then you show them something new", scores: { stargazer: 1, calla: 0, tiger: 2, white: 0, water: 3, spider: 3, valley: 0 } },
+      { letter: "c", text: "intense in the best way — real conversations only, no small talk", scores: { stargazer: 3, calla: 2, tiger: 0, white: 0, water: 1, spider: 2, valley: 0 } },
+      { letter: "d", text: "genuinely funny, hard to read, but when you're in — you're fully in", scores: { stargazer: 0, calla: 3, tiger: 1, white: 1, water: 1, spider: 2, valley: 1 } },
     ]
   },
   {
     text: "what's your relationship with change?",
     options: [
-      { letter: "a", text: "you adapt fast — new environment, new you. almost too easy.", scores: { stargazer: 2, calla: 0, tiger: 3, white: 0, water: 1 } },
-      { letter: "b", text: "you resist it at first, then commit completely once you've decided", scores: { stargazer: 1, calla: 2, tiger: 0, white: 2, water: 2 } },
-      { letter: "c", text: "you're the one who usually initiates it. stagnation doesn't sit well with you.", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 1 } },
-      { letter: "d", text: "you observe it first. slow to move but when you do, it's deliberate and final.", scores: { stargazer: 0, calla: 3, tiger: 0, white: 1, water: 3 } },
+      { letter: "a", text: "you adapt fast — new environment, new you. almost too easy.", scores: { stargazer: 2, calla: 0, tiger: 3, white: 0, water: 1, spider: 2, valley: 0 } },
+      { letter: "b", text: "you resist it at first, then commit completely once you've decided", scores: { stargazer: 1, calla: 2, tiger: 0, white: 2, water: 2, spider: 1, valley: 2 } },
+      { letter: "c", text: "you're the one who usually initiates it. stagnation doesn't sit well with you.", scores: { stargazer: 3, calla: 0, tiger: 2, white: 0, water: 1, spider: 3, valley: 0 } },
+      { letter: "d", text: "you observe it first. slow to move but when you do, it's deliberate and final.", scores: { stargazer: 0, calla: 3, tiger: 0, white: 1, water: 3, spider: 0, valley: 3 } },
     ]
   },
 ];
@@ -530,11 +531,25 @@ const results = {
     tagline: "still on the surface, everything underneath",
     desc: "you are a water lily — rooted somewhere deep, floating beautifully, carrying more than anyone sees. you're thoughtful in a way that surprises people — still on the outside, a whole world going on underneath. you notice everything and share selectively. you're the kind of person someone could know for years and still find new things to love about. the depth in you isn't hidden — it's just patient.",
     traits: ["deeply observant", "quietly complex", "emotionally intelligent", "introspective", "surprisingly layered"]
+  },
+  spider: {
+    icon: "✦",
+    name: "Spider Lily",
+    tagline: "striking, rare, impossible to forget",
+    desc: "you are a spider lily — dramatic in the best possible way, the kind of person that stops people mid-sentence. you're not trying to be memorable; you just are. there's something a little otherworldly about you — you exist slightly outside the usual rules, and people sense it. you feel things with extraordinary intensity, and you carry that quietly like a secret. meeting you changes people, even if they can't explain why.",
+    traits: ["magnetically unusual", "deeply feeling", "quietly dramatic", "unforgettable presence", "fiercely singular"]
+  },
+  valley: {
+    icon: "❁",
+    name: "Lily of the Valley",
+    tagline: "gentle, true, quietly powerful",
+    desc: "you are a lily of the valley — small and unassuming at first glance, but once people are close they realize you're one of the most quietly extraordinary things they've ever encountered. you don't need to be the loudest person in the room. your warmth is real, your care runs deep, and the people lucky enough to be close to you know exactly how rare that is. you are the kind of person people come back to.",
+    traits: ["genuinely warm", "softly resilient", "deeply caring", "understated grace", "the kind that stays"]
   }
 };
 
 let current = 0;
-let scores = { stargazer: 0, calla: 0, tiger: 0, white: 0, water: 0 };
+let scores = { stargazer: 0, calla: 0, tiger: 0, white: 0, water: 0, spider: 0, valley: 0 };
 let answers = new Array(questions.length).fill(null);
 
 function render() {
@@ -620,7 +635,7 @@ function updateProgress() {
 
 function showResult() {
   // tally scores
-  scores = { stargazer: 0, calla: 0, tiger: 0, white: 0, water: 0 };
+  scores = { stargazer: 0, calla: 0, tiger: 0, white: 0, water: 0, spider: 0, valley: 0 };
   questions.forEach((q, qi) => {
     if (answers[qi] !== null) {
       const s = q.options[answers[qi]].scores;
@@ -787,7 +802,7 @@ function fallbackDownload(canvas, name) {
 function restart() {
   current = 0;
   answers = new Array(questions.length).fill(null);
-  scores = { stargazer: 0, calla: 0, tiger: 0, white: 0, water: 0 };
+  scores = { stargazer: 0, calla: 0, tiger: 0, white: 0, water: 0, spider: 0, valley: 0 };
   document.getElementById('result').classList.remove('show');
   document.getElementById('result').innerHTML = '';
   document.getElementById('questions').style.display = '';
